@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, g
+from sqlalchemy.exc import SQLAlchemyError
+
 from database import *
 
 app = Flask(__name__)
@@ -31,8 +33,16 @@ def novo_jogador():
         posicao = request.form.get("posicao", "").strip()
         time_id = request.form.get("time_id") or None
 
-    return render_template("jogadores.html", jogadores=[], times=[])
+        if not nome:
+            flash('preencha o nome', 'error')
+        if not idade:
+            flash('preencha a idade', 'error')
+        if not posicao:
+            flash('preencha a posição', 'error')
+        if not time_id:
+            flash('preencha o time_id', 'error')
 
+    return render_template("jogadores.html", jogadores=[], times=[])
 
 @app.route("/times")
 def listar_times():
@@ -40,11 +50,41 @@ def listar_times():
 
 
 @app.route("/times/novo", methods=["GET", "POST"])
-def novo_time():
+def time_novo():
 
     if request.method == "POST":
+        # 1- Pegaros valores digitados no form
         nome = request.form.get("nome", "").strip()
-        cor = request.form.get("cor", "").strip()
+        turma = request.form.get("cor", "").strip()
+        responsavel = request.form.get("responsavel", "").strip()
+
+        # 2- Verificar se foi digitado
+        if not nome:
+            flash('preencha o nome', 'error')
+            return render_template("times.html", )
+        if not turma:
+            flash('preencha o nome', 'error')
+            return render_template("times.html", )
+        if not responsavel:
+            flash('preencha o nome', 'error')
+            return render_template("times.html", )
+
+        # 3- Salvar no banco
+        try:
+            time_novo = Time(nome=nome, turma=turma, responsavel=responsavel)
+            db_session.add(time_novo)
+            db_session.commit()
+            flash('time criado com sucesso', 'success')
+        except SQLAlchemyError as e:
+            db_session.rollback()
+            flash('Ocorreu um erro, tente novamente', 'error')
+            print(f'Erro: {e}')
+        except Exception:
+            db_session.rollback()
+            flash('Ocorreu um erro, tente novamente', 'error')
+            print(f'Error: {e}')
+
+
 
     return render_template("times.html", times=[])
 

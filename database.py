@@ -1,13 +1,12 @@
 import os
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker, scoped_session
 
+engine = create_engine("mysql+pymysql://root:senaisp@localhost:3306/interclasse_db")
 
-engine = create_engine("mysql+pymysql://usuario:senha@localhost:3306/nomedobanco")
+db_session =scoped_session, sessionmaker(bind=engine)
 
-SessionLocal = sessionmaker(bind=engine)
-
-Base = declarative_base()
+base = declarative_base()
 
 class Time(Base):
     __tablename__ = "times"
