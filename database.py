@@ -6,7 +6,7 @@ engine = create_engine("mysql+pymysql://root:senaisp@localhost:3306/interclasse_
 
 db_session =scoped_session, sessionmaker(bind=engine)
 
-base = declarative_base()
+Base = declarative_base()
 
 class Time(Base):
     __tablename__ = "times"
