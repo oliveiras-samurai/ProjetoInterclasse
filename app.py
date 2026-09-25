@@ -11,13 +11,14 @@ app.secret_key = "chave-secreta-interclasse-2026"
 
 @app.route("/")
 def dashboard():
+    times_sql = select(Time)
+    # 2- Executar o select
+    times = db_session.execute(times_sql).scalars().all()
     return render_template(
         "dashboard.html",
         total_jogadores=0,
-        total_times=0,
+        total_times=len(times),
         total_partidas=0,
-        proximas_partidas=0,
-        times_ranking=0,
     )
 
 
@@ -27,7 +28,7 @@ def listar_jogadores():
 
 
 @app.route("/jogadores/novo", methods=["GET", "POST"])
-def novo_jogador():
+def novo_jogador(jogadores=None):
 
     if request.method == "POST":
         nome = request.form.get("nome", "").strip()
@@ -48,7 +49,11 @@ def novo_jogador():
 
 @app.route("/times")
 def listar_times():
-    return render_template("times.html", times=[])
+    times_sql = select(Time)
+    # 2- Executar o select
+    times = db_session.execute(times_sql).scalars().all()
+    return render_template("times.html", times=times)
+
 
 
 @app.route("/times/novo", methods=["GET", "POST"])
