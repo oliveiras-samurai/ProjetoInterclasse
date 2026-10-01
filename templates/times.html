@@ -12,7 +12,7 @@
         {% endif %}
     </div>
 
-    {% if request.endpoint == 'novo_time' %}
+    {% if request.endpoint == 'time_novo' %}
     <section class="painel formulario">
         <h2>Novo Time</h2>
         <form method="POST" action="{{ url_for('time_novo') }}">
@@ -31,6 +31,7 @@
                         <option value="">1-EM-B</option>
                         <option value="">2-EM</option>
                         <option value="">3-EM</option>
+                    </select>
                 </div>
                 <div class="campo">
                     <label for="responsavel">Responsavel</label>
