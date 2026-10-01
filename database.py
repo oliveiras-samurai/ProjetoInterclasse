@@ -12,8 +12,9 @@ class Time(Base):
     __tablename__ = "times"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    responsavel= Column(String(100), nullable=False)
     nome = Column(String(100), nullable=False)
-    turma = Column(String(50))
+    turma = Column(String(50), nullable=False)
 
 
 class Jogador(Base):
@@ -21,7 +22,6 @@ class Jogador(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     nome = Column(String(100), nullable=False)
-    idade = Column(Integer)
     posicao = Column(String(50))
     time_id = Column(Integer, ForeignKey("times.id", ondelete="SET NULL"))
 
@@ -32,8 +32,8 @@ class Partida(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     time_casa_id = Column(Integer, ForeignKey("times.id", ondelete="CASCADE"), nullable=False)
     time_visitante_id = Column(Integer, ForeignKey("times.id", ondelete="CASCADE"), nullable=False)
-    placar_casa = Column(Integer, default=0)
-    placar_visitante = Column(Integer, default=0)
+    gols_casa = Column(Integer, default=0)
+    gols_visitante = Column(Integer, default=0)
     data_partida = Column(String(20))
 
 

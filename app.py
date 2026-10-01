@@ -1,4 +1,3 @@
-import select
 from flask import Flask, render_template, request, redirect, url_for, flash, g
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -12,13 +11,17 @@ app.secret_key = "chave-secreta-interclasse-2026"
 @app.route("/")
 def dashboard():
     times_sql = select(Time)
+    jogadores_sql = select(Jogador)
+    partidas_sql = select(Partida)
     # 2- Executar o select
     times = db_session.execute(times_sql).scalars().all()
+    jogadores = db_session.execute(jogadores_sql).scalars().all()
+    partidas = db_session.execute(partidas_sql).scalars().all()
     return render_template(
         "dashboard.html",
-        total_jogadores=0,
+        total_jogadores=len(jogadores),
         total_times=len(times),
-        total_partidas=0,
+        total_partidas=len(partidas),
     )
 
 
@@ -37,15 +40,17 @@ def novo_jogador(jogadores=None):
         time_id = request.form.get("time_id") or None
 
         if not nome:
-            flash('preencha o nome', 'error')
+            flash('Preencha o nome', 'error')
         if not idade:
-            flash('preencha a idade', 'error')
+            flash('Preencha a idade', 'error')
         if not posicao:
-            flash('preencha a posição', 'error')
+            flash('Preencha a posição', 'error')
         if not time_id:
-            flash('preencha o time_id', 'error')
-
-    return render_template("jogadores.html", jogadores=[], times=[])
+            flash('Preencha o time', 'error')
+    # aqui
+    times_sql = select(Time)
+    times = db_session.execute(times_sql).scalars().all()
+    return render_template("jogadores.html", jogadores=[], times=times)
 
 @app.route("/times")
 def listar_times():
@@ -62,18 +67,18 @@ def time_novo():
     if request.method == "POST":
         # 1- Pegaros valores digitados no form
         nome = request.form.get("nome", "").strip()
-        turma = request.form.get("cor", "").strip()
+        turma = request.form.get("turma", "").strip()
         responsavel = request.form.get("responsavel", "").strip()
 
         # 2- Verificar se foi digitado
         if not nome:
-            flash('preencha o nome', 'error')
+            flash('Preencha o nome', 'error')
             return render_template("times.html", )
         if not turma:
-            flash('preencha o nome', 'error')
+            flash('Preencha a turma', 'error')
             return render_template("times.html", )
         if not responsavel:
-            flash('preencha o nome', 'error')
+            flash('Preencha o nome responsavel', 'error')
             return render_template("times.html", )
 
         # 3- Salvar no banco
