@@ -35,11 +35,10 @@
                     </select>
                 </div>
             </div>
-            <!--suppress XmlInvalidId -->
             <div class="campo">
-                <label for="time_id" value="time">Time</label>
-                {% for time_id in times_ids %}
-                <option> value="{{ time.id }}"</option>
+                <label for="time_id">Time</label>
+                <select id="time_id" name="time_id">
+                    <option value="1">Sem time</option>
                 </select>
             </div>
             <div class="acoes-form">
