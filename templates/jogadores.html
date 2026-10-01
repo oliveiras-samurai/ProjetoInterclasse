@@ -28,17 +28,22 @@
                 <div class="campo">
                     <label for="posicao" >Posição</label>
                     <select id="posicao" name="posicao">
-                        <option value="">Atacante</option>
-                        <option value="">Meio campista</option>
-                        <option value="">Zagueiro</option>
-                        <option value="">Goleiro</option>
+                        <option value="atacante">Atacante</option>
+                        <option value="meio_campista">Meio campista</option>
+                        <option value="zagueiro">Zagueiro</option>
+                        <option value="goleiro">Goleiro</option>
                     </select>
                 </div>
             </div>
             <div class="campo">
                 <label for="time_id">Time</label>
                 <select id="time_id" name="time_id">
-                    <option value="1">Sem time</option>
+                <tbody>
+                {% for time in times %}
+                    <option value="{{ time.id }}">{{time.nome}}</option>
+                {% endfor %}
+                </tbody>
+                    <option value="">Sem time</option>
                 </select>
             </div>
             <div class="acoes-form">
