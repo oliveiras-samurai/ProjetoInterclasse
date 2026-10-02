@@ -59,9 +59,26 @@
         <h2>Lista de Jogadores</h2>
         {% if jogadores %}
         <table>
-
+            <thead>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Numero Camisa</th>
+                <th>Posição</th>
+                <th>Time</th>
+            </thead>
+            <tbody>
+            {% for jogador in jogadores %}
+                <tr>
+                    jogador{{ jogador.id }}
+                    jogador{{ jogador.nome }}
+                    jogador{{ jogador.numero_camisa }}
+                    jogador{{ jogador.posicao }}
+                    jogador{{ jogador.time_id }}
+                </tr>
+            {% endfor %}
         </table>
         {% else %}
+            </tbody>
             <p class="vazio">Nenhum jogador cadastrado ainda.</p>
         {% endif %}
     </section>
