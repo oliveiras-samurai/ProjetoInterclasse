@@ -60,11 +60,13 @@
         {% if jogadores %}
         <table>
             <thead>
+            <tr>
                 <th>Id</th>
                 <th>Nome</th>
                 <th>Numero Camisa</th>
                 <th>Posição</th>
                 <th>Time</th>
+            </tr>
             </thead>
             <tbody>
             {% for jogador in jogadores %}
@@ -72,7 +74,7 @@
                     jogador{{ jogador.id }}
                     jogador{{ jogador.nome }}
                     jogador{{ jogador.numero_camisa }}
-                    jogador{{ jogador.posicao }}
+                    jogador{{ jogador.posicao.capitalize() }}
                     jogador{{ jogador.time_id }}
                 </tr>
             {% endfor %}

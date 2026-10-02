@@ -1,3 +1,5 @@
+from os import times
+
 from flask import Flask, render_template, request, redirect, url_for, flash, g
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -27,6 +29,7 @@ def dashboard():
 
 @app.route("/jogadores")
 def listar_jogadores():
+    #buscar jogadores no banco
     jogadores_sql = select(Jogador)
     # 2- Executar o select
     jogadores = db_session.execute(jogadores_sql).scalars().all()
@@ -36,29 +39,52 @@ def listar_jogadores():
 @app.route("/jogadores/novo", methods=["GET", "POST"])
 def novo_jogador():
 
-
+    # Quando clicar no botão de cadastrar
     if request.method == "POST":
         nome = request.form.get("nome").strip()
-        numero_camisa = request.form.get("camisa_numero") or None
+        numero_camisa = request.form.get("numero_camisa") or None
         posicao = request.form.get("posicao").strip()
         time_id = request.form.get("time_id") or None
-
+        #verificar se foi digitado
         if not nome:
-            flash('Preencha o nome', 'error')
+            flash('Preencha o Nome', 'error')
+            return render_template("jogadores.html")
         if not numero_camisa:
-            flash('Preencha o numero da camisa', 'error')
+            flash('Preencha o Numero da Camisa', 'error')
+            return render_template("jogadores.html")
         if not posicao:
-            flash('Preencha a posição', 'error')
+            flash('Preencha a Posição', 'error')
+            return render_template("jogadores.html")
         if not time_id:
-            flash('Preencha o time', 'error')
-        return render_template("jogadores.html", jogadores=jogadores)
-    print(jogadores)
-    return render_template("jogadores.html", jogadores=jogadores, times=times)
+            flash('Preencha o Time', 'error')
+            return render_template("jogadores.html",)
+        # Salvar no banco
+        try:
+            jogador = Jogador(nome=nome, numero_camisa=int(numero_camisa), posicao=posicao, time_id=int(time_id))
+            db_session.add(jogador)
+            db_session.commit()
+            flash('Jogador criado com sucesso', 'success')
+        except SQLAlchemyError as e:
+            db_session.rollback()
+            flash('Ocorreu um erro, tente novamente', 'error')
+            print(f'Erro: {e}')
+        except Exception as e:
+            db_session.rollback()
+            flash('Ocorreu um erro, tente novamente', 'error')
+            print(f'Error: {e}')
+        #Carregar o formulario
+            jogadores_sql = select(Jogador)
+        # 2- Executar o select
+            jogadores = db_session.execute(jogadores_sql).scalars().all()
+        #Montar o select
+            times_sql = select(Time)
+            times = db_session.execute(times_sql).scalars().all()
+            return render_template("jogadores.html", jogadores=jogadores, times=times)
 
 @app.route("/jogadores/excluir/<jogador_id", methods=["GET", "POST"])
 def excluir_jogador(jogador_id):
     print(jogador_id)
-    jogador_sql = select(Jogador).where(jogador_id).
+    jogador_sql = select(Jogador).where(jogador_id)
 
 @app.route("/times")
 def listar_times():
