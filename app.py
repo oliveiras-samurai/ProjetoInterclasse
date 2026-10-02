@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, g
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
+from banco import tabela_time, tabela_jogador, tabela_partida
 from database import *
 
 app = Flask(__name__)
@@ -48,40 +49,23 @@ def novo_jogador():
         #verificar se foi digitado
         if not nome:
             flash('Preencha o Nome', 'error')
-            return render_template("jogadores.html")
+            return redirect(url_for("novo_jogador"))
         if not numero_camisa:
             flash('Preencha o Numero da Camisa', 'error')
-            return render_template("jogadores.html")
+            return redirect(url_for("jogadores.html"))
         if not posicao:
             flash('Preencha a Posição', 'error')
-            return render_template("jogadores.html")
+            return redirect(url_for("jogadores.html"))
         if not time_id:
             flash('Preencha o Time', 'error')
-            return render_template("jogadores.html",)
+            return redirect(url_for("jogadores.html"))
         # Salvar no banco
-        try:
-            jogador = Jogador(nome=nome, numero_camisa=int(numero_camisa), posicao=posicao, time_id=int(time_id))
-            db_session.add(jogador)
-            db_session.commit()
-            flash('Jogador criado com sucesso', 'success')
-        except SQLAlchemyError as e:
-            db_session.rollback()
-            flash('Ocorreu um erro, tente novamente', 'error')
-            print(f'Erro: {e}')
-        except Exception as e:
-            db_session.rollback()
-            flash('Ocorreu um erro, tente novamente', 'error')
-            print(f'Error: {e}')
-        #Carregar o formulario
-            jogadores_sql = select(Jogador)
-        # 2- Executar o select
-            jogadores = db_session.execute(jogadores_sql).scalars().all()
-        #Montar o select
-            times_sql = select(Time)
-            times = db_session.execute(times_sql).scalars().all()
-            return render_template("jogadores.html", jogadores=jogadores, times=times)
+        tabela_jogador.salvar(nome=nome, numero_camisa=numero_camisa, posicao=posicao, time_id=time_id)
 
-@app.route("/jogadores/excluir/<jogador_id", methods=["GET", "POST"])
+    jogadores = (tabela_jogador.select_todos())
+    return render_template("jogadores.html", jogadores=jogadores, times=times)
+
+@app.route("/jogadores/excluir/<jogador_id>", methods=["GET", "POST"])
 def excluir_jogador(jogador_id):
     print(jogador_id)
     jogador_sql = select(Jogador).where(jogador_id)
@@ -116,47 +100,56 @@ def time_novo():
             return render_template("times.html", )
 
         # 3- Salvar no banco
-        try:
-            times_novos = Time(nome=nome, turma=turma, responsavel=responsavel)
-            db_session.add(times_novos)
-            db_session.commit()
-            flash('time criado com sucesso', 'success')
-        except SQLAlchemyError as e:
-            db_session.rollback()
-            flash('Ocorreu um erro, tente novamente', 'error')
-            print(f'Erro: {e}')
-        except Exception as e:
-            db_session.rollback()
-            flash('Ocorreu um erro, tente novamente', 'error')
-            print(f'Error: {e}')
+        tabela_time.salvar(nome=nome, turma=turma, responsavel=responsavel)
 
-    #Buscar todos os times no banco
-    # 1- Montar o select
-    times_sql = select(Time)
-    # 2- Executar o select
-    times = db_session.execute(times_sql).scalars().all()
-    print(times)
+    times = tabela_time.select_todos()
     return render_template("times.html", times=times)
 
 
 @app.route("/partidas")
 def listar_partidas():
-
-    return render_template("partidas.html", partidas=[], times=[])
+    partidas = tabela_partida.select_todos()
+    return render_template("partidas.html", partidas=partidas, times=[])
 
 
 @app.route("/partidas/nova", methods=["GET", "POST"])
 def nova_partida():
 
     if request.method == "POST":
+        # 1- verificar se foi digitado
         time_casa_id = request.form.get("time_casa_id")
         time_visitante_id = request.form.get("time_visitante_id")
         placar_casa = request.form.get("placar_casa") or 0
         placar_visitante = request.form.get("placar_visitante") or 0
-        data_partida = request.form.get("data_partida", "").strip()
-        local = request.form.get("local", "").strip()
+        data_partida = request.form.get("data_partida").strip()
+        local = request.form.get("local").strip()
+        # verificar se foi digitado
+        if not time_casa_id:
+            flash('Preencha o Time da casa', 'error')
+            return render_template("partidas.html")
+        if not time_visitante_id:
+            flash('Preencha o Time da visitante', 'error')
+            return render_template("partidas.html")
+        if not placar_casa:
+            flash('Preencha o Placar da casa', 'error')
+            return render_template("partidas.html")
+        if not placar_visitante:
+            flash('Preencha o Placar da visitante', 'error')
+            return render_template("partidas.html")
+        if not data_partida:
+            flash('Preencha o Data da partida', 'error')
+            return render_template("partidas.html")
+        # 3- verificar se os times sao iguais
+        if time_casa_id == time_visitante_id:
+            flash('Selecione um time diferente', 'error')
 
-    return render_template("partidas.html", partidas=[], times=[])
+
+        # 4 - Salvar no banco
+        tabela_partida.salvar(time_casa_id=time_casa_id, placar_visitante=placar_visitante,)
+
+
+
+    return render_template("partidas.html", partidas=partidas, times=times)
 
 
 if __name__ == "__main__":
