@@ -27,7 +27,10 @@ def dashboard():
 
 @app.route("/jogadores")
 def listar_jogadores():
-    return render_template("jogadores.html", jogadores=[], times=[])
+    jogadores_sql = select(Jogador)
+    # 2- Executar o select
+    jogadores = db_session.execute(jogadores_sql).scalars().all()
+    return render_template("jogadores.html", jogadores=jogadores, times=[])
 
 
 @app.route("/jogadores/novo", methods=["GET", "POST"])
@@ -35,36 +38,20 @@ def novo_jogador():
 
 
     if request.method == "POST":
-        nome = request.form.get("nome", "").strip()
-        numero = request.form.get("id") or None
-        posicao = request.form.get("posicao", "").strip()
+        nome = request.form.get("nome").strip()
+        numero_camisa = request.form.get("camisa_numero") or None
+        posicao = request.form.get("posicao").strip()
         time_id = request.form.get("time_id") or None
 
         if not nome:
             flash('Preencha o nome', 'error')
-        if not numero:
+        if not numero_camisa:
             flash('Preencha o numero da camisa', 'error')
         if not posicao:
             flash('Preencha a posição', 'error')
         if not time_id:
             flash('Preencha o time', 'error')
         return render_template("jogadores.html", jogadores=jogadores)
-    try:
-        novo_jogador = Jogador(nome=nome, posicao=posicao, time_id=time_id)
-        db_session.add(novo_jogador)
-        db_session.commit()
-        flash('Jogador cadastrado com sucesso', 'success')
-    except SQLAlchemyError as e:
-        db_session.rollback()
-        flash('Ocorreu um erro, tente novamente', 'error')
-        print(f'Erro: {e}')
-    except Exception as e:
-        db_session.rollback()
-        flash('Ocorreu um erro, tente novamente', 'error')
-        print(f'Error: {e}')
-    # aqui
-    times_sql = select(Time)
-    times = db_session.execute(times_sql).scalars().all()
     print(jogadores)
     return render_template("jogadores.html", jogadores=jogadores, times=times)
 

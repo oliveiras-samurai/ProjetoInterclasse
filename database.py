@@ -22,6 +22,7 @@ class Jogador(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     nome = Column(String(100), nullable=False)
+    numero_camisa = Column(String(100), nullable=False)
     posicao = Column(String(50))
     time_id = Column(Integer, ForeignKey("times.id", ondelete="SET NULL"))
 
