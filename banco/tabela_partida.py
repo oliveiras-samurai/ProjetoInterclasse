@@ -22,6 +22,7 @@ def select_todos_tabela():
     )
     # 2- Executar o select
     partidas_casa = db_session.execute(partidas_sql).all()
+    print("partidas_casa")
     return partidas_casa
 
 def salvar_partida(nome, turma,responsavel):

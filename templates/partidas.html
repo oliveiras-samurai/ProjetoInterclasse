@@ -76,7 +76,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for partida_casa, partida_visitante in partidas %}
+            {% for partida, time_casa, time_visitante in partidas %}
                 <tr>
                     jogador{{ partida_casa.id }}
                     jogador{{ partida.casa.time.nome }}
