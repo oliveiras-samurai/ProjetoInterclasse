@@ -1,6 +1,8 @@
+from flask import flash
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 
-from database import Partida, db_session
+from database import Partida, db_session, Time
 
 
 def select_todos_tabela():
@@ -25,3 +27,7 @@ def salvar_partida(nome, turma,responsavel):
         db_session.rollback()
         flash('Ocorreu um erro, tente novamente', 'error')
         print(f'Error: {e}')
+
+def select_quantidade_total():
+    quantidade_total = db_session.query(Partida).count()
+    return quantidade_total

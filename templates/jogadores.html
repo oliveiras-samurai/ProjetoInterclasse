@@ -69,13 +69,13 @@
             </tr>
             </thead>
             <tbody>
-            {% for jogador in jogadores %}
+            {% for jogador,time in jogadores %}
                 <tr>
                     jogador{{ jogador.id }}
                     jogador{{ jogador.nome }}
                     jogador{{ jogador.numero_camisa }}
                     jogador{{ jogador.posicao.capitalize() }}
-                    jogador{{ jogador.time_id }}
+                    jogador{{ time.nome }}
                 </tr>
             {% endfor %}
         </table>

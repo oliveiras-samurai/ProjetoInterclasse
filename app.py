@@ -13,28 +13,25 @@ app.secret_key = "chave-secreta-interclasse-2026"
 
 @app.route("/")
 def dashboard():
-    times_sql = select(Time)
-    jogadores_sql = select(Jogador)
-    partidas_sql = select(Partida)
-    # 2- Executar o select
-    times = db_session.execute(times_sql).scalars().all()
-    jogadores = db_session.execute(jogadores_sql).scalars().all()
-    partidas = db_session.execute(partidas_sql).scalars().all()
+    times = tabela_time.select_quantidade_total()
+    jogadores = tabela_jogador.select_quantidade_total()
+    partidas = tabela_partida.select_quantidade_total()
+
     return render_template(
         "dashboard.html",
-        total_jogadores=len(jogadores),
-        total_times=len(times),
-        total_partidas=len(partidas),
+        total_jogadores=jogadores,
+        total_times=times,
+        total_partidas=partidas,
     )
 
 
 @app.route("/jogadores")
 def listar_jogadores():
     #buscar jogadores no banco
-    jogadores_sql = select(Jogador)
+    jogadores_sql = tabela_jogador.select_todos_jogador()
     # 2- Executar o select
     jogadores = db_session.execute(jogadores_sql).scalars().all()
-    return render_template("jogadores.html", jogadores=jogadores, times=[])
+    return render_template("jogadores.html", jogadores=jogadores, times=times)
 
 
 @app.route("/jogadores/novo", methods=["GET", "POST"])
