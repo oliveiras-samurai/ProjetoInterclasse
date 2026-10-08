@@ -76,11 +76,11 @@
             </tr>
             </thead>
             <tbody>
-            {% for partida in partidas %}
+            {% for partida_casa, partida_visitante in partidas %}
                 <tr>
-                    jogador{{ partida.id }}
-                    jogador{{ partida.time_casa.id }}
-                    jogador{{ partida.time_visitante }}
+                    jogador{{ partida_casa.id }}
+                    jogador{{ partida.casa.time.nome }}
+                    jogador{{ partida.time_visitante_id }}
                     jogador{{ patidas.gols_casa }}
                     jogador{{ partidas.gols_visitantes }}
                 </tr>

@@ -1,6 +1,9 @@
+from operator import or_
+
 from flask import flash
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import aliased
 
 from database import Partida, db_session, Time
 
@@ -8,10 +11,18 @@ from database import Partida, db_session, Time
 def select_todos_tabela():
     #Buscar todos os times no banco
     # 1- Montar o select
-    partidas_sql = select(Partida)
+
+    TimeCasa = aliased(Time)
+    TimeVisitante = aliased(Time)
+
+    partidas_sql = (
+        select(Partida,TimeCasa, TimeVisitante)
+        .join(TimeCasa, Partida.time_casa_id == TimeCasa.id)
+        .join(TimeVisitante, Partida.time_visitante_id_id == TimeVisitante.id)
+    )
     # 2- Executar o select
-    times = db_session.execute(partidas_sql).scalars().all()
-    return times
+    partidas_casa = db_session.execute(partidas_sql).all()
+    return partidas_casa
 
 def salvar_partida(nome, turma,responsavel):
     try:
